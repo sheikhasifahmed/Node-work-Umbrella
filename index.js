@@ -123,7 +123,7 @@ async function order() {
     app.put("/orders/:id", async (req, res) => {
       const id = req.params.id;
       const update = req.body;
-      console.log(update);
+
       const filter = { _id: ObjectId(id) };
       const options = { upsert: true };
       const updateDoc = {
@@ -150,3 +150,46 @@ async function order() {
   }
 }
 order().catch(console.dir);
+
+async function user() {
+  try {
+    await client.connect();
+    const database = client.db("umbrella");
+    const usersCollection = database.collection("users");
+    // create a document to insert
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+
+      const result = await usersCollection.insertOne(user);
+      console.log(`A document was inserted with the _id: ${result.insertedId}`);
+      res.json(user);
+    });
+
+    app.put("/users", async (req, res) => {
+      const id = req.params.id;
+      const user = req.body;
+      const filter = { email: user.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      console.log(result);
+      res.json(result);
+    });
+
+    app.get("/users", async (req, res) => {
+      const cursor = usersCollection.find({});
+      const users = await cursor.toArray();
+      res.send(users);
+    });
+  } finally {
+    // await client.close();
+  }
+}
+user().catch(console.dir);

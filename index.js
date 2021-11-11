@@ -158,7 +158,7 @@ async function user() {
     const usersCollection = database.collection("users");
     // create a document to insert
 
-    app.post("/users", async (req, res) => {
+    app.post("/save-user", async (req, res) => {
       const user = req.body;
 
       const result = await usersCollection.insertOne(user);

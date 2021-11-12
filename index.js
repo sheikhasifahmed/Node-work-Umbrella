@@ -177,6 +177,20 @@ async function user() {
       console.log(result);
       res.json(result);
     });
+
+    app.put("/users", async (req, res) => {
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = { $set: user };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      console.log(result);
+      res.json(result);
+    });
   } finally {
     // await client.close();
   }

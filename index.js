@@ -48,6 +48,14 @@ async function run() {
       console.log(newProduct);
     });
 
+    app.delete("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await productsCollection.deleteOne(filter);
+      console.log(result);
+      res.json(result);
+    });
+
     // single product data fetching by id for purchase
     app.get("/purchase/:id", async (req, res) => {
       const id = req.params.id;

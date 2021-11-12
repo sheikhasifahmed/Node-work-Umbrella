@@ -57,31 +57,6 @@ async function run() {
 
       res.send(result);
     });
-
-    // app.put("/user/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const updatedUser = req.body;
-    //   const filter = { _id: ObjectId(id) };
-    //   const options = { upsert: true };
-    //   const updateDoc = {
-    //     $set: { name: updatedUser.name, email: updatedUser.email },
-    //   };
-    //   const result = await usersCollection.updateOne(
-    //     filter,
-    //     updateDoc,
-    //     options
-    //   );
-    //   res.json(result);
-    // });
-
-    // deletation of a prouduct
-    // app.delete("/product/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const result = await productsCollection.deleteOne(query);
-    //   console.log(result);
-    //   res.json(result);
-    // });
   } finally {
     // await client.close();
   }
@@ -110,7 +85,7 @@ async function order() {
 
     app.get("/my-orders/:user", async (req, res) => {
       const user = req.params.user;
-      console.log(user);
+
       const query = { userEmail: user };
       console.log(query);
       const cursor = ordersCollection.find(query);
@@ -166,14 +141,34 @@ async function user() {
       res.json(user);
     });
 
-    app.put("/users", async (req, res) => {
-      const id = req.params.id;
+    app.get("/users", async (req, res) => {
+      const cursor = usersCollection.find({});
+      const users = await cursor.toArray();
+      res.send(users);
+    });
+
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = usersCollection.find(query);
+      const users = await cursor.toArray();
+      res.send(users);
+    });
+
+    app.delete("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await usersCollection.deleteOne(query);
+      console.log(result);
+      res.json(result);
+    });
+
+    app.put("/users/:email", async (req, res) => {
+      const email = req.params.email;
       const user = req.body;
-      const filter = { email: user.email };
+      const filter = { email: email };
       const options = { upsert: true };
-      const updateDoc = {
-        $set: user,
-      };
+      const updateDoc = { $set: { role: user.role } };
       const result = await usersCollection.updateOne(
         filter,
         updateDoc,
@@ -181,12 +176,6 @@ async function user() {
       );
       console.log(result);
       res.json(result);
-    });
-
-    app.get("/users", async (req, res) => {
-      const cursor = usersCollection.find({});
-      const users = await cursor.toArray();
-      res.send(users);
     });
   } finally {
     // await client.close();

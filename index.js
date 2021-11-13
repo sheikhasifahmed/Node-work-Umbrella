@@ -204,3 +204,28 @@ async function user() {
   }
 }
 user().catch(console.dir);
+
+async function review() {
+  try {
+    await client.connect();
+    const database = client.db("umbrella");
+    const reviewsCollection = database.collection("reviews");
+
+    app.get("/reviews", async (req, res) => {
+      const cursors = reviewsCollection.find({});
+      const reviews = await cursors.toArray();
+      res.send(reviews);
+    });
+
+    app.post("/reviews", async (req, res) => {
+      const userReview = req.body;
+      console.log(userReview);
+      const result = await reviewsCollection.insertOne(userReview);
+      console.log(`A document was inserted with the _id: ${result.insertedId}`);
+      res.json(result);
+    });
+  } finally {
+  }
+}
+
+review().catch(console.dir);
